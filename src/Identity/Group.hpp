@@ -12,6 +12,7 @@
 
 #include "Connections/Id.hpp"
 #include "Crypto/NullPrivateKey.hpp"
+#include "Crypto/Integer.hpp"
 
 #include "PublicIdentity.hpp"
 
@@ -27,6 +28,7 @@ namespace Identity {
   class GroupData : public QSharedData {
     public:
       typedef Connections::Id Id;
+      typedef Crypto::Integer Integer;
 
       /**
        * Default constructor for empty group
@@ -44,6 +46,21 @@ namespace Identity {
       {
       }
 
+      /**
+       * Constructor for initializing group parameters too.
+       */
+      explicit GroupData(const QVector<PublicIdentity> &roster,
+          const QHash<const Id, int> &id_to_int, const Id &leader,
+          int subgroup_policy, const Integer g, const Integer p, const Integer q) :
+        Roster(roster),
+        IdtoInt(id_to_int),
+        Leader(leader),
+        SGPolicy(subgroup_policy),
+        Size(roster.count()),
+        GroupGenerator(g), GroupPrime(p), GroupOrder(q)
+      {
+      }
+
       virtual ~GroupData() {}
 
       const QVector<PublicIdentity> Roster;
@@ -51,6 +68,8 @@ namespace Identity {
       const Id Leader;
       const int SGPolicy;
       const int Size;
+      //XXX Group Parameters Variables.
+      const Integer GroupGenerator, GroupPrime, GroupOrder;
 
     private:
   };
@@ -66,6 +85,7 @@ namespace Identity {
 
     public:
       typedef Crypto::AsymmetricKey AsymmetricKey;
+      typedef Crypto::Integer Integer;
       typedef Connections::Id Id;
       typedef QVector<PublicIdentity>::const_iterator const_iterator;
 
@@ -220,6 +240,16 @@ namespace Identity {
         static QSharedPointer<AsymmetricKey> key(new Crypto::NullPrivateKey());
         return key;
       }
+
+      /**
+       * XXX Functions to return Group parameters.
+       */
+      const Integer &GetGenerator() const {return _data->GroupGenerator;}
+
+      const Integer &GetPrime() const {return _data->GroupPrime;}
+
+      const Integer &GetOrder() const {return _data->GroupOrder;}
+
     private:
       QSharedDataPointer<GroupData> _data;
       QSharedPointer<const Group> _subgroup;
