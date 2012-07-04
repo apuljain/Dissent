@@ -1,6 +1,22 @@
--Need random generator for generating large *Integers* between (Integer_min,
- Integer_max). Existing functions allow random ints. between
+July 3,4 2012
+================================================================================
+-Need random generator for generating large *Integer* between (Integer_min,
+ Integer_max). Existing function in Random.hpp allows random *int* between
  (int_min, int_max).
 
--No method for local_Id to int conversion. Member identity - how is it
- assigned?
+-How to initialize Integer variable with hexadecimal string representation of
+ a number? There seems to be no such constructor which accepts hex string.
+ I need this to test the code with parameters initialized using hex strings.
+
+-For test code, I included only DissentTest.hpp, taking Henry's AuthenticateTest
+ code as reference. But upon compilation, it gives undefined reference error for
+ LRSAuthenticat* class objects. Do I need to include LRSAuthenticat*.hpp headers
+ in LRSAuthenticatorTest.cpp file too?
+
+-No method for Local_Id to int conversion. Ordered numbering of members in the
+ group is required. If it is to be derived from existing Id class object then
+ appropriate methods should be added to get *int* member identity from Id.
+ Also, when and how is Member identity - assigned?
+
+-Wrapper for maintaining group parameters is needed. At present all group para-
+ meters are maintained in private variables of LRSAuthenticat* class.
