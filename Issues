@@ -1,0 +1,6 @@
+-Need random generator for generating large *Integers* between (Integer_min,
+ Integer_max). Existing functions allow random ints. between
+ (int_min, int_max).
+
+-No method for local_Id to int conversion. Member identity - how is it
+ assigned?
