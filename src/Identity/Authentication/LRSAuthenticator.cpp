@@ -1,62 +1,74 @@
 #include "LRSAuthenticator.hpp"
-#include "Crypto/CppHash.hpp"
 
 namespace Dissent {
-
 namespace Identity {
 namespace Authentication {
 
-  LRSAuthenticator::LRSAuthenticator(const QVector<PublicIdentity> &public_ident,
-    const Integer &g, const Integer &p, const Integer &q):
+  LRSAuthenticator::LRSAuthenticator(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
+     Integer &g, Integer &p, Integer &q):
     _public_ident(public_ident),
     _g(g), _p(p), _q(q)
   {
+    _num_members = public_ident.count();
   }
 
-  const QByteArray GetPublicIdentByteArray()
+  const QByteArray LRSAuthenticator::GetPublicIdentByteArray()
   {
-      QByteArray value;
+    QByteArray value;
 
-      for(QVector<PublicIdentity>::iterator itr = _public_ident.begin();
-        itr != _public_ident.end(); ++itr)
-      {
-        value.append(*itr.GetVerificationKey()->GetByteArray());
-      }
-
-      return value;
-  }
-
-  bool LRSAuthenticator::VerifySignature(const LRSignature &signature)
-  {
-    //prepare input byte array - public_identities + g + p + q.
-    QByteArray input_hash_byte = GetPublicIdentByteArray() +
-                              _g.GetByteArray() + _p.GetByteArray() + _q.GetByteArray();
-
-    QByteArray group_hash = ComputeHash(input_hash_byte);
-
-    Integer zi, zi_dash;
-    Integer ci = signature.GetC();
-
-    for(int i = 0; i < _public_ident.Count(); i++)
+    for(QVector<QSharedPointer<PublicIdentity> >::const_iterator itr = _public_ident.begin();
+      itr != _public_ident.end(); ++itr)
     {
-       zi = (_g.Pow(signature.GetSi(i), _p) * Integer(_public_ident[i].GetVerificationKey()->GetByteArray()).Pow(ci, _p)) % _p;
+      QSharedPointer<Crypto::CppDsaPublicKey> publ_k = (*itr)->GetVerificationKey().dynamicCast<CppDsaPublicKey>();
+      value.append(publ_k->GetPublicElement().GetByteArray());
+    }
+    return value;
+  }
 
-       zi_dash = (Integer(group_hash).Pow(signature.GetSi(i), _p) * signature.GetTag().Pow(ci, _p)) % _p;
+  QPair<bool, PublicIdentity> LRSAuthenticator::VerifyResponse(const Connections::Id &member, const QVariant &data)
+  {
+    const QPair<bool, PublicIdentity> invalid(false, PublicIdentity());
 
-       //prepare input hash string
-       input_hash_byte = GetPublicIdentByteArray() + signature.GetTag().GetByteArray() +
-                         zi.GetByteArray() + zi_dash.GetByteArray();
-       //compute hash
-       ci = Integer(ComputeHash(input_hash_byte));
+    if(!data.canConvert<QSharedPointer<LRSignature> >())
+    {
+      qWarning() << "Got Invalid Signature data: Cannot convert to LRSignature";
+      return invalid;
     }
 
-    qDebug() << "C:  " << signature.GetC().ToString() << "\n";
-    qDebug() << "H': " << ci.ToString() << "\n";
+    QSharedPointer<LRSignature> signature = data.value<QSharedPointer<LRSignature> >();
 
-    return (signature.GetC() == ci)
+    _num_members = _public_ident.count();
+
+    //prepare input byte array - public_identities.
+    QByteArray input_hash_byte = GetPublicIdentByteArray();
+
+    //Calculate hash = H(public_keys) and map it to an element in the group.
+    Dissent::Crypto::CppHash hash_object;
+    Integer group_hash = (Integer(hash_object.ComputeHash(input_hash_byte))%_q);
+    group_hash = _g.Pow(group_hash, _p);
+
+    Integer zi, zi_dash;
+    Integer ci = signature->GetC();
+
+    for(int i = 0; i < _num_members; i++)
+    {
+      QSharedPointer<Crypto::CppDsaPublicKey> publ_k = _public_ident[i]->GetVerificationKey().dynamicCast<CppDsaPublicKey>();
+
+      zi = (_g.Pow(signature->GetSi(i), _p) * (publ_k->GetPublicElement().Pow(ci, _p))) % _p;
+
+      zi_dash = ((group_hash.Pow(signature->GetSi(i), _p)) * (signature->GetTag().Pow(ci, _p))) % _p;
+
+      //prepare input hash string
+      input_hash_byte = GetPublicIdentByteArray() + signature->GetTag().GetByteArray() +
+        zi.GetByteArray() + zi_dash.GetByteArray();
+
+      //compute hash
+      hash_object.Restart();
+      ci = Integer(hash_object.ComputeHash(input_hash_byte));
+    }
+
+    return QPair<bool, PublicIdentity> (signature->GetC() == ci, PublicIdentity());
   }
-
-
 }
 }
 }

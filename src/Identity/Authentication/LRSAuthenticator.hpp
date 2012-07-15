@@ -2,45 +2,55 @@
 #define DISSENT_IDENTITY_LRS_AUTHENTICATOR_H_GUARD
 
 #include <QHash>
+#include <QVariant>
+#include <QPair>
 #include "Crypto/Integer.hpp"
+#include "Crypto/CppHash.hpp"
+#include "Crypto/CppDsaPrivateKey.hpp"
+#include "Crypto/CppDsaPublicKey.hpp"
+#include "Connections/Id.hpp"
 #include "Identity/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
+#include "IAuthenticator.hpp"
 
 namespace Dissent {
 namespace Identity {
 namespace Authentication {
 
-   /**
-    * Implements Authenticator that authenticates client
-    * to be a member of the group.
-    */
+  class LRSAuthenticator : public IAuthenticator {
+    public:
+      typedef Crypto::Integer Integer;
+      typedef Connections::Id Id;
+      typedef Crypto::CppDsaPublicKey CppDsaPublicKey;
+      typedef Crypto::CppDsaPrivateKey CppDsaPrivateKey;
 
-   class LRSAuthenticator {
+      virtual ~LRSAuthenticator() {}
 
-     public:
+      LRSAuthenticator(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
+        Integer &g, Integer &p, Integer &q);
 
-       explicit LRSAuthenticator(const QVector<PublicIdentity> &public_ident,
-         const Integer &g, const Integer &p, const Integer &q);
+      /**
+       * This function to be implemented. This will handle challenge to be sent
+       * to authenticating client.
+       */
+      virtual QVariant RequestChallenge(const Id &member, const QVariant &data) {return QVariant();}
 
-       ~LRSAuthenticator() {}
+      /**
+       * Verify signature of the client.
+       */
+      virtual QPair<bool, PublicIdentity> VerifyResponse(const Id &member,
+        const QVariant &data);
 
-       /**
-        * Verify signature of the client.
-        */
-       bool VerifySignature(const LRSignature &signature);
-
-
-       /**
-        * Function to convert _public_ident vector to QByteArray
-        */
-       const QByteArray GetPublicIdentByteArray();
+      /**
+       * Function to convert _public_ident vector to QByteArray
+       */
+      virtual const QByteArray GetPublicIdentByteArray();
 
      private:
-       const QVector<PublicIdentity> _public_ident;
+       const QVector<QSharedPointer<PublicIdentity> > _public_ident;
        const Integer _g, _p, _q;
-
+       int _num_members;
    };
-
 }
 }
 }

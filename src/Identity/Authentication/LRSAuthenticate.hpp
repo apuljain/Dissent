@@ -3,55 +3,65 @@
 
 #include <QHash>
 #include "Crypto/Integer.hpp"
+#include "Crypto/CppHash.hpp"
+#include "Crypto/CppDsaPrivateKey.hpp"
+#include "Crypto/CppDsaPublicKey.hpp"
+#include "Connections/Id.hpp"
 #include "Identity/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
+#include "Identity/PrivateIdentity.hpp"
+#include "IAuthenticate.hpp"
 
 namespace Dissent {
-
-namespace Crypto {
-  class Library;
-}
-
 namespace Identity {
 namespace Authentication {
 
-   /**
-    * Implements Authenticate Class
-    * to Generate Signature.
-    */
+  class LRSAuthenticate : public IAuthenticate {
+    public:
+      typedef Crypto::Integer Integer;
+      typedef Crypto::CppDsaPrivateKey CppDsaPrivateKey;
+      typedef Crypto::CppDsaPublicKey CppDsaPublicKey;
 
-   class LRSAuthenticate {
+      LRSAuthenticate(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
+        const QSharedPointer<PrivateIdentity> &priv_ident,
+        const Integer &g, const Integer &p, const Integer &q, const int self_ident = 0);
 
-     public:
+      virtual ~LRSAuthenticate() {}
 
-       explicit LRSAuthenticate(const QVector<PublicIdentity> &public_ident, const PrivateIdentity &priv_ident,
-         const Integer &g, const Integer &p, const Integer &q);
+      /**
+       * Function to be used when two phase authetication is implemented.
+       */
+      inline virtual bool RequireRequestChallenge() { return false; }
 
-       ~LRSAuthenticate() {}
+      /**
+       * Generate signature of the client.
+       */
+      virtual QVariant PrepareForChallenge();
 
-       /**
-        * Generate signature of the client.
-        */
-       const LRSignature GenerateSignature();
+      /**
+       * Processes a challenge from the server and produce the response. To be implemented.
+       * @param data the challenge
+       */
+      virtual QPair<bool, QVariant> ProcessChallenge(const QVariant & data) {}
 
-       /**
-        * Function to convert _public_ident vector to QByteArray
-        */
-       const QByteArray GetPublicIdentByteArray();
+      /**
+       * Returns the PrivateIdentity, potentially updated
+       * due to the authentication process
+       */
+      inline virtual PrivateIdentity GetPrivateIdentity() const {return *_priv_ident;}
 
-       static const int RandomNumberLength = 32;
+      /**
+       * Function to convert _public_ident vector to QByteArray
+       */
+      virtual const QByteArray GetPublicIdentByteArray();
 
-     private:
-
-       const QVector<PublicIdentity> _public_ident;
-       const int _num_members, _self_identity;
-       const Integer _g, _p, _q;
-       const PrivateIdentity _priv_ident;
-       LRSignature _signature;
-
-       Crypto::Library *_lib;
+    private:
+      const QVector<QSharedPointer<PublicIdentity> > _public_ident;
+      const QSharedPointer<PrivateIdentity> _priv_ident;
+      const Integer _g, _p, _q;
+      int _num_members, _self_identity;
+      QSharedPointer<LRSignature> _signature;
    };
-
 }
 }
 }
