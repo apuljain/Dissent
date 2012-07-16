@@ -33,7 +33,8 @@ namespace Authentication {
        * This function to be implemented. This will handle challenge to be sent
        * to authenticating client.
        */
-      virtual QVariant RequestChallenge(const Id &member, const QVariant &data) {return QVariant();}
+      virtual QVariant RequestChallenge(const Id &member, const QVariant &data)
+      {return QVariant();}
 
       /**
        * Verify signature of the client.
