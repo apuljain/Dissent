@@ -7,7 +7,7 @@
 #include "Crypto/CppDsaPrivateKey.hpp"
 #include "Crypto/CppDsaPublicKey.hpp"
 #include "Connections/Id.hpp"
-#include "Identity/LRSignature.hpp"
+#include "Identity/Authentication/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
 #include "Identity/PrivateIdentity.hpp"
 #include "IAuthenticate.hpp"
@@ -49,11 +49,6 @@ namespace Authentication {
        * due to the authentication process
        */
       inline virtual PrivateIdentity GetPrivateIdentity() const {return *_priv_ident;}
-
-      /**
-       * Function to convert _public_ident vector to QByteArray
-       */
-      virtual const QByteArray GetPublicIdentByteArray();
 
     private:
       const QVector<QSharedPointer<PublicIdentity> > _public_ident;

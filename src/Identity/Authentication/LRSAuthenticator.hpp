@@ -9,7 +9,7 @@
 #include "Crypto/CppDsaPrivateKey.hpp"
 #include "Crypto/CppDsaPublicKey.hpp"
 #include "Connections/Id.hpp"
-#include "Identity/LRSignature.hpp"
+#include "Identity/Authentication/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
 #include "IAuthenticator.hpp"
 
@@ -33,19 +33,13 @@ namespace Authentication {
        * This function to be implemented. This will handle challenge to be sent
        * to authenticating client.
        */
-      virtual QVariant RequestChallenge(const Id &member, const QVariant &data)
-      {return QVariant();}
+      virtual QVariant RequestChallenge(const Id &member, const QVariant &data) {}
 
       /**
        * Verify signature of the client.
        */
       virtual QPair<bool, PublicIdentity> VerifyResponse(const Id &member,
         const QVariant &data);
-
-      /**
-       * Function to convert _public_ident vector to QByteArray
-       */
-      virtual const QByteArray GetPublicIdentByteArray();
 
      private:
        const QVector<QSharedPointer<PublicIdentity> > _public_ident;
