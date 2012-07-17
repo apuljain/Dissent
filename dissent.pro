@@ -94,6 +94,9 @@ HEADERS += ext/joyent-http-parser/http_parser.h \
            src/Identity/Authentication/IAuthenticator.hpp \
            src/Identity/Authentication/NullAuthenticate.hpp \
            src/Identity/Authentication/NullAuthenticator.hpp \
+	   src/Identity/Authentication/LRSAuthenticator.hpp \
+	   src/Identity/Authentication/LRSAuthenticate.hpp \
+	   src/Identity/Authentication/LRSignature.hpp \
            src/Identity/Group.hpp \
            src/Identity/GroupHolder.hpp \
            src/Identity/PrivateIdentity.hpp \
@@ -293,4 +296,7 @@ SOURCES += ext/joyent-http-parser/http_parser.c \
            src/Web/Services/RoundIdService.cpp \
            src/Web/Services/SendMessageService.cpp \
            src/Web/Services/SessionIdService.cpp \
-           src/Web/Services/WebService.cpp
+           src/Web/Services/WebService.cpp \
+	   src/Identity/Authentication/LRSAuthenticator.cpp \
+	   src/Identity/Authentication/LRSAuthenticate.cpp \
+    	   src/Identity/Authentication/LRSignature.cpp
