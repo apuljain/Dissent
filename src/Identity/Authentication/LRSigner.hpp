@@ -29,8 +29,7 @@ namespace Identity {
       typedef Crypto::CppDsaPublicKey CppDsaPublicKey;
       typedef Crypto::CppDsaPrivateKey CppDsaPrivateKey;
 
-      virtual ~LRSiger() {}
-
+      virtual ~LRSigner() {}
       LRSigner() {}
 
       /**
@@ -57,9 +56,9 @@ namespace Identity {
 
     private:
       const Integer _g, _p, _q;
-      const QVector<QSharedPointer<PublicIdentity> > &_public_ident;
-      const QSharedPointer<PrivateIdentity> &_priv_ident;
-      const QByteArray &_context_tag;
+      const QVector<QSharedPointer<PublicIdentity> > _public_ident;
+      const QSharedPointer<PrivateIdentity> _priv_ident;
+      const QByteArray _context_tag;
 
   };
  }
