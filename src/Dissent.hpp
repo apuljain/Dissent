@@ -83,10 +83,13 @@
 #include "Identity/Authentication/IAuthenticator.hpp"
 #include "Identity/Authentication/NullAuthenticate.hpp"
 #include "Identity/Authentication/NullAuthenticator.hpp"
+#include "Identity/Authentication/LRSAuthenticate.hpp"
+#include "Identity/Authentication/LRSAuthenticator.hpp"
 #include "Identity/Group.hpp"
 #include "Identity/GroupHolder.hpp"
 #include "Identity/PrivateIdentity.hpp"
 #include "Identity/PublicIdentity.hpp"
+#include "Identity/Authentication/LRSignature.hpp"
 
 #include "Messaging/BufferSink.hpp"
 #include "Messaging/DummySink.hpp"
