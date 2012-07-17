@@ -87,7 +87,7 @@ namespace Identity {
    * @param rhs the identity used on the right hand side of the operator
    * @returns true if the groups are equal
    */
-  inline bool operator==(const PublicIdentity &lhs, const PublicIdentity &rhs) 
+  inline bool operator==(const PublicIdentity &lhs, const PublicIdentity &rhs)
   {
     return (lhs.GetId() == rhs.GetId()) &&
       ((lhs.GetVerificationKey()) == (rhs.GetVerificationKey())) &&
@@ -101,7 +101,7 @@ namespace Identity {
    * @param rhs the identity used on the right hand side of the operator
    * @returns true if the groups are not equal
    */
-  inline bool operator!=(const PublicIdentity &lhs, const PublicIdentity &rhs) 
+  inline bool operator!=(const PublicIdentity &lhs, const PublicIdentity &rhs)
   {
     return !(lhs == rhs);
   }
