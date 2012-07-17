@@ -24,7 +24,7 @@ namespace Authentication {
 
       LRSAuthenticate(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
         const QSharedPointer<PrivateIdentity> &priv_ident,
-        const Integer &g, const Integer &p, const Integer &q, const int self_ident = 0);
+        const Integer &g, const Integer &p, const Integer &q);
 
       virtual ~LRSAuthenticate() {}
 
@@ -54,8 +54,6 @@ namespace Authentication {
       const QVector<QSharedPointer<PublicIdentity> > _public_ident;
       const QSharedPointer<PrivateIdentity> _priv_ident;
       const Integer _g, _p, _q;
-      int _num_members, _self_identity;
-      QSharedPointer<LRSignature> _signature;
    };
 }
 }

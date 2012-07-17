@@ -1,5 +1,5 @@
 #include "LRSAuthenticate.hpp"
-#include "LRSignature.hpp"
+#include "LRSigner.hpp"
 
 namespace Dissent {
 namespace Identity {
@@ -8,18 +8,18 @@ namespace Authentication {
   LRSAuthenticate::LRSAuthenticate(
     const QVector<QSharedPointer<PublicIdentity> > &public_ident,
     const QSharedPointer<PrivateIdentity> &priv_ident,
-    const Integer &g, const Integer &p, const Integer &q, const int self_ident):
+    const Integer &g, const Integer &p, const Integer &q):
     _public_ident(public_ident), _priv_ident(priv_ident),
-    _g(g), _p(p), _q(q),
-    _num_members(public_ident.count()), _self_identity(self_ident)
+    _g(g), _p(p), _q(q)
   {
-      _signature = QSharedPointer<LRSignature>(new LRSignature());
   }
 
   QVariant LRSAuthenticate::PrepareForChallenge()
   {
-      LRSignature authe(_g, _p, _q);
-      return (authe.LRSSign(_public_ident, _priv_ident, ""));
+      QByteArray _context_tag(10, 'a');
+      QByteArray _message(10, 'b');
+      LRSigner authe(_public_ident, _priv_ident, _context_tag, _g, _p, _q);
+      return (authe.LRSign(_message));
   }
 }
 }
