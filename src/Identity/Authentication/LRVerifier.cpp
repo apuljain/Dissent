@@ -5,23 +5,30 @@ namespace Identity {
 namespace Authentication {
 
   LRVerifier::LRVerifier(
-    const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-    const QByteArray &context_tag,
-    const Integer &g, const Integer &p, const Integer &q):
-    _public_ident(public_ident), _context_tag(context_tag),
-    _g(g), _p(p), _q(q)
+    const QVector<QSharedPointer<AsymmetricKey> > &public_ident,
+    const QByteArray &context_tag):
+    _public_ident(public_ident), _context_tag(context_tag)
   {
+    //get group parameters from the public_key
+    QSharedPointer<Crypto::CppDsaPublicKey> publ_k =
+      _public_ident[0].dynamicCast<CppDsaPublicKey>();
+
+     _g = publ_k->GetGenerator();
+     _p = publ_k->GetModulus();
+     _q = publ_k->GetSubgroup();
+
   }
 
   const QByteArray LRVerifier::GetPublicIdentByteArray()
   {
     QByteArray value;
 
-    for(QVector<QSharedPointer<PublicIdentity> >::const_iterator itr =
+    for(QVector<QSharedPointer<AsymmetricKey> >::const_iterator itr =
          _public_ident.begin(); itr != _public_ident.end(); ++itr)
     {
       QSharedPointer<Crypto::CppDsaPublicKey> publ_k =
-        (*itr)->GetVerificationKey().dynamicCast<CppDsaPublicKey>();
+        (*itr).dynamicCast<CppDsaPublicKey>();
+
       value.append(publ_k->GetPublicElement().GetByteArray());
     }
 
@@ -76,7 +83,7 @@ namespace Authentication {
     for(int i = 0; i < _num_members; i++)
     {
       QSharedPointer<Crypto::CppDsaPublicKey> publ_k =
-      _public_ident[i]->GetVerificationKey().dynamicCast<CppDsaPublicKey>();
+        _public_ident[i].dynamicCast<CppDsaPublicKey>();
 
       zi = (_g.Pow(si[i], _p) * (publ_k->GetPublicElement().Pow(ci, _p))) % _p;
 

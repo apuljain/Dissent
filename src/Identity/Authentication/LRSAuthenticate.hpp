@@ -6,6 +6,7 @@
 #include "Crypto/CppHash.hpp"
 #include "Crypto/CppDsaPrivateKey.hpp"
 #include "Crypto/CppDsaPublicKey.hpp"
+#include "Crypto/AsymmetricKey.hpp"
 #include "Connections/Id.hpp"
 #include "Identity/Authentication/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
@@ -21,6 +22,7 @@ namespace Authentication {
       typedef Crypto::Integer Integer;
       typedef Crypto::CppDsaPrivateKey CppDsaPrivateKey;
       typedef Crypto::CppDsaPublicKey CppDsaPublicKey;
+      typedef Crypto::AsymmetricKey AsymmetricKey;
 
       LRSAuthenticate(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
         const QSharedPointer<PrivateIdentity> &priv_ident,

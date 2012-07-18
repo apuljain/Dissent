@@ -8,6 +8,7 @@
 #include "Crypto/CppHash.hpp"
 #include "Crypto/CppDsaPrivateKey.hpp"
 #include "Crypto/CppDsaPublicKey.hpp"
+#include "Crypto/AsymmetricKey.hpp"
 #include "Connections/Id.hpp"
 #include "Identity/Authentication/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
@@ -23,6 +24,7 @@ namespace Authentication {
       typedef Connections::Id Id;
       typedef Crypto::CppDsaPublicKey CppDsaPublicKey;
       typedef Crypto::CppDsaPrivateKey CppDsaPrivateKey;
+      typedef Crypto::AsymmetricKey AsymmetricKey;
 
       virtual ~LRSAuthenticator() {}
 

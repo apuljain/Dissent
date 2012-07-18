@@ -5,25 +5,52 @@ namespace Identity {
 namespace Authentication {
 
   LRSigner::LRSigner(
-    const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-    const QSharedPointer<PrivateIdentity> &priv_ident,
-    const QByteArray &context_tag,
-    const Integer &g, const Integer &p, const Integer &q):
+    const QVector<QSharedPointer<AsymmetricKey> > &public_ident,
+    const QSharedPointer<AsymmetricKey> &priv_ident,
+    const QByteArray &context_tag):
     _public_ident(public_ident), _priv_ident(priv_ident),
-    _context_tag(context_tag),
-    _g(g), _p(p), _q(q)
+    _context_tag(context_tag)
   {
+    //Get Group parameters from private key.
+
+    QSharedPointer<Crypto::CppDsaPrivateKey> priv_key =
+      _priv_ident.dynamicCast<CppDsaPrivateKey>();
+
+    _g = priv_key->GetGenerator();
+    _p = priv_key->GetModulus();
+    _q = priv_key->GetSubgroup();
+
+    //get the self_identity -- by comparing the "matching" public_key in the list.
+    qint32 counter = 0;
+    _self_identity = -1;
+
+    QSharedPointer<CppDsaPrivateKey> t2 = _priv_ident.dynamicCast<CppDsaPrivateKey>();
+
+    for(QVector<QSharedPointer<AsymmetricKey> >::const_iterator itr =
+        _public_ident.begin(); itr != _public_ident.end(); ++itr, ++counter)
+    {
+      QSharedPointer<CppDsaPublicKey> t1 = (*itr).dynamicCast<CppDsaPublicKey>();
+      if(_g.Pow(t2->GetPrivateExponent(), _p) == t1->GetPublicElement())
+      {
+        _self_identity = counter;
+        break;
+      }
+    }
+
+   if(_self_identity == -1)
+      qDebug() << "INVALID PRIVATE KEY. NO CORRESPONDING PUBLIC KEY IN THE ROSTER.";
+
   }
 
   const QByteArray LRSigner::GetPublicIdentByteArray()
   {
     QByteArray value;
 
-    for(QVector<QSharedPointer<PublicIdentity> >::const_iterator itr =
+    for(QVector<QSharedPointer<AsymmetricKey> >::const_iterator itr =
          _public_ident.begin(); itr != _public_ident.end(); ++itr)
     {
       QSharedPointer<Crypto::CppDsaPublicKey> publ_k =
-        (*itr)->GetVerificationKey().dynamicCast<CppDsaPublicKey>();
+        (*itr).dynamicCast<CppDsaPublicKey>();
       value.append(publ_k->GetPublicElement().GetByteArray());
     }
 
@@ -32,8 +59,7 @@ namespace Authentication {
 
   QVariant LRSigner::LRSign(const QByteArray &message)
   {
-    int _num_members = _public_ident.count();
-    int _self_identity = _priv_ident->GetLocalId().GetInteger().GetInt32();
+    qint32 _num_members = _public_ident.count();
 
     QByteArray input_hash_byte = GetPublicIdentByteArray() + _context_tag;
 
@@ -43,7 +69,7 @@ namespace Authentication {
     group_hash = _g.Pow(group_hash, _p);
 
     QSharedPointer<Crypto::CppDsaPrivateKey> priv_key =
-      _priv_ident->GetSigningKey().dynamicCast<CppDsaPrivateKey>();
+      _priv_ident.dynamicCast<CppDsaPrivateKey>();
 
     QByteArray linkage_tag =
       group_hash.Pow(priv_key->GetPrivateExponent(), _p).GetByteArray();
@@ -68,6 +94,8 @@ namespace Authentication {
     Integer b = Integer(hash_object.ComputeHash(input_hash_byte));
 
     ci[(_self_identity + 1) % _num_members] = b;
+    qDebug() << "self_ident: " << _self_identity;
+    qDebug() << "Reached Here!";
 
     for(int i = (_self_identity + 1) % _num_members; i != _self_identity;
          i = (i + 1)%_num_members)
@@ -77,7 +105,7 @@ namespace Authentication {
       si[i] = (Integer(random_byte_array)%_q);
 
       QSharedPointer<Crypto::CppDsaPublicKey> publ_k =
-        _public_ident[i]->GetVerificationKey().dynamicCast<CppDsaPublicKey>();
+        _public_ident[i].dynamicCast<CppDsaPublicKey>();
 
       input_hash_byte = GetPublicIdentByteArray() + linkage_tag + message +
         ((_g.Pow(si[i], _p) * publ_k->GetPublicElement().Pow(ci[i], _p)) % _p).GetByteArray()

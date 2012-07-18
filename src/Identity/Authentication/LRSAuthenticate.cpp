@@ -16,10 +16,19 @@ namespace Authentication {
 
   QVariant LRSAuthenticate::PrepareForChallenge()
   {
-      QByteArray _context_tag(10, 'a');
-      QByteArray _message(10, 'b');
-      LRSigner authe(_public_ident, _priv_ident, _context_tag, _g, _p, _q);
-      return (authe.LRSign(_message));
+    QByteArray _context_tag(10, 'a');
+    QByteArray _message(10, 'b');
+    QVector<QSharedPointer<AsymmetricKey> > _public_ident_asymm;
+    //Get Asymmetric keys from public_idents.
+
+    for(QVector<QSharedPointer<PublicIdentity> >::const_iterator itr =
+        _public_ident.begin(); itr != _public_ident.end(); ++itr)
+    {
+      _public_ident_asymm.push_back((*itr)->GetVerificationKey());
+    }
+    LRSigner authe(_public_ident_asymm, _priv_ident->GetSigningKey(), _context_tag);
+
+    return (authe.LRSign(_message));
   }
 }
 }

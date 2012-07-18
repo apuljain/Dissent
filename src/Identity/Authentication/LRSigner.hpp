@@ -8,6 +8,7 @@
 #include "Crypto/CppHash.hpp"
 #include "Crypto/CppDsaPrivateKey.hpp"
 #include "Crypto/CppDsaPublicKey.hpp"
+#include "Crypto/AsymmetricKey.hpp"
 #include "Connections/Id.hpp"
 #include "Identity/PublicIdentity.hpp"
 #include "Identity/PrivateIdentity.hpp"
@@ -28,6 +29,7 @@ namespace Identity {
       typedef Identity::PrivateIdentity PrivateIdentity;
       typedef Crypto::CppDsaPublicKey CppDsaPublicKey;
       typedef Crypto::CppDsaPrivateKey CppDsaPrivateKey;
+      typedef Crypto::AsymmetricKey AsymmetricKey;
 
       virtual ~LRSigner() {}
       LRSigner() {}
@@ -39,10 +41,9 @@ namespace Identity {
        * @param: group parameters.
        */
       explicit LRSigner(
-        const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-        const QSharedPointer<PrivateIdentity> &priv_ident,
-        const QByteArray &context_tag,
-        const Integer &g, const Integer &p, const Integer &q);
+        const QVector<QSharedPointer<AsymmetricKey> > &public_ident,
+        const QSharedPointer<AsymmetricKey> &priv_ident,
+        const QByteArray &context_tag);
 
       /**
        * Generate signature of the client.
@@ -55,9 +56,10 @@ namespace Identity {
       virtual const QByteArray GetPublicIdentByteArray();
 
     private:
-      const Integer _g, _p, _q;
-      const QVector<QSharedPointer<PublicIdentity> > _public_ident;
-      const QSharedPointer<PrivateIdentity> _priv_ident;
+      Integer _g, _p, _q;
+      quint32 _self_identity;
+      const QVector<QSharedPointer<AsymmetricKey> > _public_ident;
+      const QSharedPointer<AsymmetricKey> _priv_ident;
       const QByteArray _context_tag;
 
   };
