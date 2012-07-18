@@ -52,8 +52,9 @@ namespace Tests {
     Integer &generator, Integer &modulus, Integer &subgroup)
   {
     //Instantiate client and server objects.
+
     LRSAuthenticate auth_client(public_idents, priv_idents[0], generator,
-                                 modulus, subgroup, 0);
+                                 modulus, subgroup);
     LRSAuthenticator auth_leader(public_idents, generator, modulus, subgroup);
 
     QVariant m1 = auth_client.PrepareForChallenge();
@@ -75,36 +76,32 @@ namespace Tests {
   {
     //Fail due to invalid public_private key pair for authenticating client.
     //Instantiate client and server objects.
-    LRSAuthenticate auth_client_test1(public_idents, priv_idents[1], generator,
-                                       modulus, subgroup, 0);
-    LRSAuthenticator auth_leader_test1(public_idents, generator, modulus, subgroup);
 
-    QVariant m1 = auth_client_test1.PrepareForChallenge();
-    QPair<bool, PublicIdentity> r2 = auth_leader_test1.VerifyResponse(
-                                      priv_idents[0]->GetLocalId(), m1);
+//    QSharedPointer<CppDsaPrivateKey> private_key(new CppDsaPrivateKey(modulus,
+//                                                    subgroup, generator));
+//    Id id(1);
+//    QSharedPointer<PrivateIdentity> pr_id = QSharedPointer<PrivateIdentity>
+//     (new PrivateIdentity(id, QSharedPointer<AsymmetricKey>(private_key),
+//                           QSharedPointer<DiffieHellman>(), true));
 
-    EXPECT_FALSE(r2.first);
+//    LRSAuthenticate auth_client_test1(public_idents, pr_id, generator,
+//                                       modulus, subgroup);
+//    LRSAuthenticator auth_leader_test1(public_idents, generator, modulus, subgroup);
 
-    //Fail due to invalid group parameters viz. generator, modulus, and subgroup.
-    LRSAuthenticate auth_client_test2(public_idents, priv_idents[0], subgroup,
-                                       modulus, subgroup, 0);
-    LRSAuthenticator auth_leader_test2(public_idents, subgroup, modulus,
-                                        subgroup);
+//    QVariant m1 = auth_client_test1.PrepareForChallenge();
+//    QPair<bool, PublicIdentity> r2 = auth_leader_test1.VerifyResponse(
+//                                      pr_id->GetLocalId(), m1);
 
-    m1 = auth_client_test2.PrepareForChallenge();
-    r2 = auth_leader_test2.VerifyResponse(priv_idents[0]->GetLocalId(), m1);
-
-    EXPECT_FALSE(r2.first);
+//    EXPECT_FALSE(r2.first);
 
     //Fail due to different sets of public keys with client and leader.
     LRSAuthenticate auth_client_test3(public_idents, priv_idents[0], generator,
-                                       modulus, subgroup, 0);
+                                       modulus, subgroup);
     public_idents[0] = public_idents[1];
     LRSAuthenticator auth_leader_test3(public_idents, generator, modulus,
                                         subgroup);
-
-    m1 = auth_client_test3.PrepareForChallenge();
-    r2 = auth_leader_test3.VerifyResponse(priv_idents[0]->GetLocalId(), m1);
+    QVariant m1 = auth_client_test3.PrepareForChallenge();
+    QPair<bool, PublicIdentity> r2 = auth_leader_test3.VerifyResponse(priv_idents[0]->GetLocalId(), m1);
 
     EXPECT_FALSE(r2.first);
 }
