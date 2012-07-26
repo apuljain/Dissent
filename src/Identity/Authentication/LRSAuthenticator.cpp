@@ -6,10 +6,8 @@ namespace Identity {
 namespace Authentication {
 
   LRSAuthenticator::LRSAuthenticator(
-    const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-    Integer &g, Integer &p, Integer &q):
-    _public_ident(public_ident),
-    _g(g), _p(p), _q(q)
+    const QVector<QSharedPointer<PublicIdentity> > &public_ident):
+    _public_ident(public_ident)
   {
   }
 
@@ -26,12 +24,9 @@ namespace Authentication {
         _public_ident.begin(); itr != _public_ident.end(); ++itr)
     {
       _public_ident_asymm.push_back((*itr)->GetVerificationKey());
-      qDebug() << "Reached Here!";
-
     }
 
     LRVerifier autho(_public_ident_asymm, _context_tag);
-    qDebug() << "REACHED";
     return (autho.LRVerify(_message, member, data));
   }
 

@@ -28,8 +28,7 @@ namespace Authentication {
 
       virtual ~LRSAuthenticator() {}
 
-      LRSAuthenticator(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-        Integer &g, Integer &p, Integer &q);
+      LRSAuthenticator(const QVector<QSharedPointer<PublicIdentity> > &public_ident);
 
       /**
        * This function to be implemented. This will handle challenge to be sent
@@ -45,7 +44,6 @@ namespace Authentication {
 
      private:
        const QVector<QSharedPointer<PublicIdentity> > _public_ident;
-       const Integer _g, _p, _q;
    };
 }
 }

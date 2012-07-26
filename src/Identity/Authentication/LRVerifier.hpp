@@ -57,7 +57,9 @@ namespace Identity {
 
     private:
       Integer _g, _p, _q;
+      quint32 _num_members;
       const QVector<QSharedPointer<AsymmetricKey> > _public_ident;
+      QByteArray _public_ident_byte;
       const QByteArray _context_tag;
   };
  }

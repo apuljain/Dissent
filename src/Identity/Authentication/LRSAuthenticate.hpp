@@ -8,7 +8,6 @@
 #include "Crypto/CppDsaPublicKey.hpp"
 #include "Crypto/AsymmetricKey.hpp"
 #include "Connections/Id.hpp"
-#include "Identity/Authentication/LRSignature.hpp"
 #include "Identity/PublicIdentity.hpp"
 #include "Identity/PrivateIdentity.hpp"
 #include "IAuthenticate.hpp"
@@ -25,8 +24,7 @@ namespace Authentication {
       typedef Crypto::AsymmetricKey AsymmetricKey;
 
       LRSAuthenticate(const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-        const QSharedPointer<PrivateIdentity> &priv_ident,
-        const Integer &g, const Integer &p, const Integer &q);
+        const QSharedPointer<PrivateIdentity> &priv_ident);
 
       virtual ~LRSAuthenticate() {}
 
@@ -55,7 +53,6 @@ namespace Authentication {
     private:
       const QVector<QSharedPointer<PublicIdentity> > _public_ident;
       const QSharedPointer<PrivateIdentity> _priv_ident;
-      const Integer _g, _p, _q;
    };
 }
 }

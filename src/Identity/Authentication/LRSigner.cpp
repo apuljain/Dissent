@@ -38,9 +38,12 @@ namespace Authentication {
     }
 
    if(_self_identity == -1)
-      qDebug() << "INVALID PRIVATE KEY. NO CORRESPONDING PUBLIC KEY IN THE ROSTER.";
+     qDebug() << "INVALID PRIVATE KEY. NO CORRESPONDING PUBLIC KEY IN THE ROSTER.";
 
-  }
+   _public_ident_byte = GetPublicIdentByteArray();
+   _num_members = _public_ident.count();
+
+ }
 
   const QByteArray LRSigner::GetPublicIdentByteArray()
   {
@@ -59,9 +62,7 @@ namespace Authentication {
 
   QVariant LRSigner::LRSign(const QByteArray &message)
   {
-    qint32 _num_members = _public_ident.count();
-
-    QByteArray input_hash_byte = GetPublicIdentByteArray() + _context_tag;
+    QByteArray input_hash_byte = _public_ident_byte + _context_tag;
 
     //Calculate hash = H(public_keys) and map it to an element in the group.
     Crypto::CppHash hash_object;
@@ -87,15 +88,13 @@ namespace Authentication {
 
     QVector<Integer> ci(_num_members), si(_num_members);
 
-    input_hash_byte = GetPublicIdentByteArray() + linkage_tag + message +
+    input_hash_byte = _public_ident_byte + linkage_tag + message +
       _g.Pow(u, _p).GetByteArray() + group_hash.Pow(u, _p).GetByteArray();
 
     hash_object.Restart();
     Integer b = Integer(hash_object.ComputeHash(input_hash_byte));
 
     ci[(_self_identity + 1) % _num_members] = b;
-    qDebug() << "self_ident: " << _self_identity;
-    qDebug() << "Reached Here!";
 
     for(int i = (_self_identity + 1) % _num_members; i != _self_identity;
          i = (i + 1)%_num_members)
@@ -107,7 +106,7 @@ namespace Authentication {
       QSharedPointer<Crypto::CppDsaPublicKey> publ_k =
         _public_ident[i].dynamicCast<CppDsaPublicKey>();
 
-      input_hash_byte = GetPublicIdentByteArray() + linkage_tag + message +
+      input_hash_byte = _public_ident_byte + linkage_tag + message +
         ((_g.Pow(si[i], _p) * publ_k->GetPublicElement().Pow(ci[i], _p)) % _p).GetByteArray()
         + ((group_hash.Pow(si[i], _p) * Integer(linkage_tag).Pow(ci[i], _p)) % _p).GetByteArray();
 
@@ -129,9 +128,6 @@ namespace Authentication {
     list.append(QVariant(temp));
     list.append(QVariant(linkage_tag));
 
-    //FIXME: TODO
-    //append random public_identity
-    //list.append();
     return list;
   }
 

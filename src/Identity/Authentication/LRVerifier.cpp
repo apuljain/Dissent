@@ -17,6 +17,8 @@ namespace Authentication {
      _p = publ_k->GetModulus();
      _q = publ_k->GetSubgroup();
 
+     _public_ident_byte = GetPublicIdentByteArray();
+     _num_members = _public_ident.count();
   }
 
   const QByteArray LRVerifier::GetPublicIdentByteArray()
@@ -37,8 +39,7 @@ namespace Authentication {
 
   QPair<bool, PublicIdentity> LRVerifier::LRVerify(
     const QByteArray &message, const Id &member, const QVariant &data)
-  {
-    int _num_members = _public_ident.count();
+  {    
     QList<QVariant> in;
     const QPair<bool, PublicIdentity> invalid(false, PublicIdentity());
 
@@ -62,7 +63,7 @@ namespace Authentication {
     _num_members = _public_ident.count();
 
     //prepare input byte array - public_identities.
-    QByteArray input_hash_byte = GetPublicIdentByteArray() + _context_tag;
+    QByteArray input_hash_byte = _public_ident_byte + _context_tag;
 
     //Calculate hash = H(public_keys) and map it to an element in the group.
     Dissent::Crypto::CppHash hash_object;
@@ -90,7 +91,7 @@ namespace Authentication {
       zi_dash = ((group_hash.Pow(si[i], _p))*(linkage_tag.Pow(ci, _p))) % _p;
 
       //prepare input hash string
-      input_hash_byte = GetPublicIdentByteArray() + linkage_tag.GetByteArray() +
+      input_hash_byte = _public_ident_byte + linkage_tag.GetByteArray() +
         message + zi.GetByteArray() + zi_dash.GetByteArray();
 
       //compute hash

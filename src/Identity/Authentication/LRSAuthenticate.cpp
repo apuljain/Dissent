@@ -7,10 +7,8 @@ namespace Authentication {
 
   LRSAuthenticate::LRSAuthenticate(
     const QVector<QSharedPointer<PublicIdentity> > &public_ident,
-    const QSharedPointer<PrivateIdentity> &priv_ident,
-    const Integer &g, const Integer &p, const Integer &q):
-    _public_ident(public_ident), _priv_ident(priv_ident),
-    _g(g), _p(p), _q(q)
+    const QSharedPointer<PrivateIdentity> &priv_ident):
+    _public_ident(public_ident), _priv_ident(priv_ident)
   {
   }
 
