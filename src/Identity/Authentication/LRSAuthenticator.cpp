@@ -42,7 +42,7 @@ namespace Authentication {
     in = signature.toList();
     QByteArray tag = in[2].toByteArray();
 
-    //Check for double authentication.
+    //Check for multiple authentication.
     //FIXME: Policy decision - what to do if a client tries to authenticate twice.
     if(_tag_public_idents.contains(tag))
     {

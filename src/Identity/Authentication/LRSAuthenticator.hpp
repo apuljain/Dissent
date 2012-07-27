@@ -31,8 +31,8 @@ namespace Authentication {
       LRSAuthenticator(const QVector<QSharedPointer<PublicIdentity> > &public_ident);
 
       /**
-       * This function to be implemented. This will handle challenge to be sent
-       * to authenticating client.
+       * This function is to be implemented. This will handle challenge to be sent
+       * to authenticating client. Not required for Single step authentication.
        */
       virtual QVariant RequestChallenge(const Id &member, const QVariant &data) {}
 
