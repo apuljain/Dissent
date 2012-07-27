@@ -39,7 +39,7 @@ namespace Authentication {
     QSharedPointer<Crypto::AsymmetricKey> skey(lib->CreatePrivateKey());
     QSharedPointer<Crypto::DiffieHellman> dh(lib->CreateDiffieHellman());
 
-    _new_priv_ident = PrivateIdentity(_priv_ident->GetLocalId(), skey, dh,  true);		//FIXME
+    _new_priv_ident = PrivateIdentity(_priv_ident->GetLocalId(), skey, dh,  true);
 
     _new_pub_ident = GetPublicIdentity(_new_priv_ident);
 
