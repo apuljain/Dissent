@@ -37,19 +37,19 @@ namespace Authentication {
     return value;
   }
 
-  QPair<bool, PublicIdentity> LRVerifier::LRVerify(
-    const QByteArray &message, const Id &member, const QVariant &data)
+  bool LRVerifier::LRVerify(
+    const QByteArray &message, const QVariant &signature)
   {    
     QList<QVariant> in;
-    const QPair<bool, PublicIdentity> invalid(false, PublicIdentity());
+    const bool invalid(false);
 
-    if(!data.canConvert(QVariant::List))
+    if(!signature.canConvert(QVariant::List))
     {
       qWarning() << "Invalid challenge from client: cannot convert to list";
       return invalid;
     }
 
-    in = data.toList();
+    in = signature.toList();
 
     if(in.count() != 3 ||
         !in[0].canConvert(QVariant::ByteArray) ||
@@ -99,7 +99,7 @@ namespace Authentication {
       ci = Integer(hash_object.ComputeHash(input_hash_byte));
     }
 
-    return QPair<bool, PublicIdentity> (Integer(in[0].toByteArray()) == ci, PublicIdentity());
+    return (Integer(in[0].toByteArray()) == ci);
   }
 
 }

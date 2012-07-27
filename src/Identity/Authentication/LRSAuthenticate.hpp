@@ -34,15 +34,15 @@ namespace Authentication {
       inline virtual bool RequireRequestChallenge() { return false; }
 
       /**
-       * Generate signature of the client.
+       * Not required in one phase authentication.
        */
       virtual QVariant PrepareForChallenge();
 
       /**
-       * Processes a challenge from the server and produce the response. To be implemented.
-       * @param data the challenge
+       * Generate Signature and random PublicIdentity.
+       * @param data : invalid
        */
-      virtual QPair<bool, QVariant> ProcessChallenge(const QVariant & data) {}
+      virtual QPair<bool, QVariant> ProcessChallenge(const QVariant & data);
 
       /**
        * Returns the PrivateIdentity, potentially updated
@@ -53,6 +53,8 @@ namespace Authentication {
     private:
       const QVector<QSharedPointer<PublicIdentity> > _public_ident;
       const QSharedPointer<PrivateIdentity> _priv_ident;
+      PublicIdentity _new_pub_ident;
+      PrivateIdentity _new_priv_ident;
    };
 }
 }

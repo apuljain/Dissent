@@ -16,9 +16,9 @@
 
 namespace Dissent {
 namespace Identity {
-    namespace Authentication {
+  namespace Authentication {
   /**
-   * Signer class. It generates LR signature.
+   * Verifier class. It Verifies LR signature.
    */
   class LRVerifier {
 
@@ -45,10 +45,9 @@ namespace Identity {
         const QByteArray &context_tag);
 
       /**
-       * Generate signature of the client.
+       * Verify signature of the client.
        */
-      virtual QPair<bool, PublicIdentity> LRVerify(const QByteArray &message,
-        const Id &member, const QVariant &data);
+      virtual bool LRVerify(const QByteArray &message, const QVariant &signature);
 
       /**
        * Function to convert _public_ident vector to QByteArray

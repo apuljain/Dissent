@@ -44,6 +44,7 @@ namespace Authentication {
 
      private:
        const QVector<QSharedPointer<PublicIdentity> > _public_ident;
+       QHash<QByteArray, QByteArray> _tag_public_idents;
    };
 }
 }

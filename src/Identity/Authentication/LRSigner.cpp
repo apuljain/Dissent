@@ -118,17 +118,17 @@ namespace Authentication {
     si[_self_identity] = ((u % _q) -
       ((priv_key->GetPrivateExponent())*(ci[_self_identity]) % _q)) % _q;
 
-    QList<QVariant> list, temp;
-    list.append(QVariant(ci[0].GetByteArray()));
+    QList<QVariant> temp, signature;
+    signature.append(QVariant(ci[0].GetByteArray()));
 
     for(int i = 0; i < si.count(); i++)
     {
       temp.append(QVariant(si[i].GetByteArray()));
     }
-    list.append(QVariant(temp));
-    list.append(QVariant(linkage_tag));
+    signature.append(QVariant(temp));
+    signature.append(QVariant(linkage_tag));
 
-    return list;
+    return signature;
   }
 
 }
