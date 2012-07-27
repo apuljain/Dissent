@@ -46,7 +46,7 @@ namespace Authentication {
 
       /**
        * Returns the PrivateIdentity, potentially updated
-       * due to the authentication process
+       * due to the authentication process.
        */
       inline virtual PrivateIdentity GetPrivateIdentity() const {return *_priv_ident;}
 
